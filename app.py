@@ -33,9 +33,23 @@ def register():
 def game_rules():
     return render_template('game_rules.html')
 
+# @app.route('/admin')
+# def admin():
+#     return render_template('admin.html')
+
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM users')
+    records = c.fetchall()
+    conn.close()
+    return render_template('admin.html', records=records)
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
