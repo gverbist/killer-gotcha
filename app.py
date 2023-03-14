@@ -12,7 +12,16 @@ gameState = "running"
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+
+    # Get the current game state from the game_state table
+    c.execute('SELECT game_state FROM game_state')
+    gameState = c.fetchone()[0]
+
+    conn.close()
+
+    return render_template('index.html', gameState=gameState)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -49,9 +58,6 @@ def thank_you():
 def game_rules():
     return render_template('game_rules.html')
 
-# @app.route('/admin')
-# def admin():
-#     return render_template('admin.html')
 @app.route('/delete_data', methods=['POST'])
 def delete_data():
     conn = sqlite3.connect('users.db')
