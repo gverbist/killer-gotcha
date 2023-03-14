@@ -1,5 +1,5 @@
+ARG arch
 FROM python:3-alpine
-
 # Create app directory
 WORKDIR /app
 
