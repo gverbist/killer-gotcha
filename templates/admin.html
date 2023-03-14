@@ -22,4 +22,39 @@
       {% endfor %}
     </tbody>
   </table>
+  <button id="game-state-button" class="btn btn-primary" data-state="{{ gameState }}">Game State: {{ gameState }}</button>
+
 {% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    // Get the game state button
+    var gameStateButton = document.getElementById("game-state-button");
+    
+    // Set the initial game state
+    var gameState = gameStateButton.getAttribute("data-state");
+    
+    // Add an event listener to the game state button
+    gameStateButton.addEventListener("click", function() {
+      // Toggle the game state
+      if (gameState === "stopped") {
+        gameState = "running";
+      } else {
+        gameState = "stopped";
+      }
+      
+      // Update the button text and data-state attribute
+      gameStateButton.setAttribute("data-state", gameState);
+      gameStateButton.textContent = "Game State: " + gameState;
+      
+      // Update the game state in the database
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "{{ url_for('update_game_state') }}", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.send("gameState=" + encodeURIComponent(gameState));
+    });
+  </script>
+{% endblock %}
+
+
