@@ -24,6 +24,7 @@
   </table>
   <button id="game-state-button" class="btn btn-primary" data-state="{{ gameState }}">Game State: {{ gameState }}</button>
   <button id="delete-data-button" class="btn btn-danger">Delete All Data</button>
+  <button id="generate-targets-button" class="btn btn-primary">Generate Targets</button>
 {% endblock %}
 
 {% block scripts %}
@@ -68,6 +69,26 @@
       xhr.send();
       
       // Reload the page after the data has been deleted
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+          window.location.reload();
+        }
+      }
+    });
+  </script>
+  <script>
+    // Get the generate targets button
+    var generateTargetsButton = document.getElementById("generate-targets-button");
+    
+    // Add an event listener to the generate targets button
+    generateTargetsButton.addEventListener("click", function() {
+      // Send an AJAX request to generate targets
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "{{ url_for('generate_targets') }}", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.send();
+      
+      // Reload the page after the targets have been generated
       xhr.onreadystatechange = function() {
         if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
           window.location.reload();

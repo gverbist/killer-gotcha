@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_bootstrap import Bootstrap
 import sqlite3
+import random
 
 
 app = Flask(__name__)
@@ -60,6 +61,38 @@ def delete_data():
     conn.close()
     return ''
 
+
+@app.route('/generate_targets', methods=['POST'])
+def generate_targets():
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+
+    # Get a list of all first names in the database
+    c.execute('SELECT id, first_name FROM users')
+    rows = c.fetchall()
+    firstNames = [row[1] for row in rows]
+
+    # Shuffle the list of first names randomly
+    random.shuffle(firstNames)
+
+    # Update the target column of each row with the corresponding shuffled name
+    for i, firstName in enumerate(firstNames):
+        # Get the current row ID
+        currentId = rows[i][0]
+
+        # Get the ID of the next row (taking into account the possibility of wrapping around to the beginning of the list)
+        nextId = rows[(i + 1) % len(rows)][0]
+
+        # Skip over the current row when updating the target column
+        if currentId == nextId:
+            continue
+
+        # Update the target column of the current row with the corresponding shuffled name
+        c.execute('UPDATE users SET target = ? WHERE id = ?', (firstNames[(i + 1) % len(firstNames)], currentId))
+
+    conn.commit()
+    conn.close()
+    return ''
 
 @app.route('/admin')
 def admin():
