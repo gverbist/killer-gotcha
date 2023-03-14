@@ -23,7 +23,7 @@
     </tbody>
   </table>
   <button id="game-state-button" class="btn btn-primary" data-state="{{ gameState }}">Game State: {{ gameState }}</button>
-
+  <button id="delete-data-button" class="btn btn-danger">Delete All Data</button>
 {% endblock %}
 
 {% block scripts %}
@@ -53,6 +53,26 @@
       xhr.open("POST", "{{ url_for('update_game_state') }}", true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.send("gameState=" + encodeURIComponent(gameState));
+    });
+  </script>
+  <script>
+    // Get the delete data button
+    var deleteDataButton = document.getElementById("delete-data-button");
+    
+    // Add an event listener to the delete data button
+    deleteDataButton.addEventListener("click", function() {
+      // Send an AJAX request to delete all data from the users table
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "{{ url_for('delete_data') }}", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.send();
+      
+      // Reload the page after the data has been deleted
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+          window.location.reload();
+        }
+      }
     });
   </script>
 {% endblock %}

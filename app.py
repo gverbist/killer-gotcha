@@ -51,6 +51,14 @@ def game_rules():
 # @app.route('/admin')
 # def admin():
 #     return render_template('admin.html')
+@app.route('/delete_data', methods=['POST'])
+def delete_data():
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute('DELETE FROM users')
+    conn.commit()
+    conn.close()
+    return ''
 
 
 @app.route('/admin')
