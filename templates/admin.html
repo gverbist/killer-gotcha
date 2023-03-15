@@ -25,6 +25,7 @@
   <button id="game-state-button" class="btn btn-primary" data-state="{{ gameState }}">Game State: {{ gameState }}</button>
   <button id="delete-data-button" class="btn btn-danger">Delete All Data</button>
   <button id="generate-targets-button" class="btn btn-primary">Generate Targets</button>
+  <button id="send-targets-button" class="btn btn-primary">Send Targets</button>
 {% endblock %}
 
 {% block scripts %}
@@ -95,6 +96,36 @@
         }
       }
     });
+    // Get the send targets button
+var sendTargetsButton = document.getElementById("send-targets-button");
+
+// Add an event listener to the send targets button
+sendTargetsButton.addEventListener("click", function() {
+  // Send an AJAX request to send targets
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "{{ url_for('send_emails') }}", true);
+  xhr.send();
+
+  // Display a success message when the targets have been sent
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+      var alertElement = document.createElement("div");
+      alertElement.classList.add("alert", "alert-success", "mt-3");
+      alertElement.setAttribute("role", "alert");
+      alertElement.textContent = "Targets sent!";
+      document.body.appendChild(alertElement);
+  // Fade out the alert after 5 seconds
+      setTimeout(function() {
+        alertElement.classList.add("fade");
+        alertElement.classList.add("show");
+        setTimeout(function() {
+          alertElement.remove();
+        }, 500);
+      }, 5000);
+    }
+  }
+});
+
   </script>
 {% endblock %}
 

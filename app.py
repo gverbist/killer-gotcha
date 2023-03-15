@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_bootstrap import Bootstrap
 import sqlite3
 import random
+import smtplib
+from email.mime.text import MIMEText
+
 
 
 app = Flask(__name__)
@@ -133,7 +136,42 @@ def update_game_state():
     conn.close()
     return ''
 
+@app.route('/send_emails')
+def send_emails():
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
 
+    # Get the first name, last name, and email address for each user
+    c.execute('SELECT first_name, last_name, email, target FROM users')
+    rows = c.fetchall()
+
+    # Send an email to each user with their target information
+    for row in rows:
+        firstName = row[0]
+        lastName = row[1]
+        emailAddress = row[2]
+        target = row[3]
+
+        # Create the email message
+        message = f"Hello {firstName} {lastName}, your target is {target}."
+
+        # Create the email object
+        email = MIMEText(message)
+        email['From'] = 'gamemaster@bist.be'
+        email['To'] = emailAddress
+        email['Subject'] = 'Your Target Information'
+
+        # Send the email using SMTP
+        with smtplib.SMTP('yoursmtpserver', 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.ehlo()
+            smtp.login('usenrame', 'password')
+            smtp.sendmail('yoursenderemail', emailAddress, email.as_string())
+
+    conn.close()
+
+    return 'Emails sent!'
 # def admin():
 #     conn = sqlite3.connect('users.db')
 #     c = conn.cursor()
